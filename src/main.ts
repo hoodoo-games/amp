@@ -1,9 +1,11 @@
-import { AmpProgram } from "./interpreter";
+import { compile } from "./compiler";
+import { AmpInterpreter } from "./interpreter";
 import "./style.css";
 
 function init() {
-  const prog = new AmpProgram([src]);
-  prog.run();
+  const program = compile([src], { programName: "app" });
+  const interpreter = new AmpInterpreter(program);
+  interpreter.run();
 }
 
 const src = `
@@ -34,7 +36,7 @@ namespace Example:
 
 namespace DroneFleet:
     type Part:
-        t Example.AnotherType
+        Example.AnotherType t
 `;
 
 init();

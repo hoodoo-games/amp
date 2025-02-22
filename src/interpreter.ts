@@ -1,25 +1,12 @@
-export class AmpProgram {
-  src: string[] = [];
+import { AmpProgram } from "./program";
 
-  constructor(src: string[]) {
-    this.src = src;
+// runtime representation and state of program
+export class AmpInterpreter {
+  program: AmpProgram;
+
+  constructor(program: AmpProgram) {
+    this.program = program;
   }
 
   run() {}
-}
-
-interface Namespace {
-  name: string;
-}
-
-interface Type {
-  name: string;
-}
-
-interface Node {
-  name?: string;
-}
-
-interface Attribute {
-  name: string;
 }
