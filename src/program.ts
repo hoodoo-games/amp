@@ -1,12 +1,18 @@
 // compile-time representation of program
 export class Program {
-  name: string;
+  root: Node;
   elements: Record<string, Element> = {};
-  types: Record<string, NamedType> = {};
-  nodes: Record<string, Node> = {};
 
   constructor(name: string) {
-    this.name = name;
+    this.root = {
+      name,
+      comments: [],
+      public: true,
+      export: false,
+      inputs: [],
+      outputs: [],
+      impl: { kind: "graph", graph: { nodes: [], edges: {} } },
+    };
   }
 }
 
@@ -17,7 +23,10 @@ interface Element {
 
 type Type =
   | { kind: "none" }
+  | { kind: "int" }
+  | { kind: "uint" }
   | { kind: "num" }
+  | { kind: "bool" }
   | { kind: "array"; type: Type; len: number }
   | { kind: "sum"; def: Type[] }
   | { kind: "product"; def: Type[] };
@@ -32,14 +41,21 @@ interface Constant {
 }
 
 export interface Node extends Element {
-  inputs: Record<string, Type>;
-  outputs: Record<string, Type>;
-  impl: NodeGraph;
+  public: boolean;
+  export: boolean;
+  inputs: Port[];
+  outputs: Port[];
+  impl: { kind: "import" } | { kind: "graph"; graph: NodeGraph };
 }
 
 interface NodeGraph {
-  nodes: Record<string, Node>;
+  nodes: string[];
   edges: Record<string, string>; // "node/port": "node/port"
+}
+
+interface Port {
+  name: string;
+  type: Type;
 }
 
 export class ProgramBuilder {
@@ -50,11 +66,9 @@ export class ProgramBuilder {
   }
 
   build(): Program {
-    //TODO resolve references and validate program
+    //TODO validate program
     return new Program("app");
   }
 
   //TODO construction methods
-  //TODO use only string references (order independence)
-  //TODO intermediate representations of program elements
 }
