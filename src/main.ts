@@ -1,10 +1,10 @@
 import { compile } from "./compiler";
-import { AmpInterpreter } from "./interpreter";
+import { Interpreter } from "./interpreter";
 import "./style.css";
 
 function init() {
   const program = compile([src], { programName: "app" });
-  const interpreter = new AmpInterpreter(program);
+  const interpreter = new Interpreter(program);
   interpreter.run();
 }
 

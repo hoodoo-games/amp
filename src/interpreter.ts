@@ -1,10 +1,10 @@
-import { AmpProgram } from "./program";
+import { Program } from "./program";
 
 // runtime representation and state of program
-export class AmpInterpreter {
-  program: AmpProgram;
+export class Interpreter {
+  program: Program;
 
-  constructor(program: AmpProgram) {
+  constructor(program: Program) {
     this.program = program;
   }
 

@@ -1,85 +1,57 @@
 // compile-time representation of program
-export class AmpProgram {
+export class Program {
   name: string;
   elements: Record<string, Element> = {};
-  root: Node;
+  types: Record<string, NamedType> = {};
+  nodes: Record<string, Node> = {};
 
   constructor(name: string) {
     this.name = name;
-    this.root = { name, inputs: {}, outputs: {}, impl: {} };
   }
 }
 
-// an element is a named
 interface Element {
-  public: boolean;
+  name: string;
+  comments: string[];
 }
 
-type TypeKind =
+type Type =
   | { kind: "none" }
   | { kind: "num" }
-  | { kind: "sum"; def: SumType }
-  | { kind: "product"; def: ProductType };
+  | { kind: "array"; type: Type; len: number }
+  | { kind: "sum"; def: Type[] }
+  | { kind: "product"; def: Type[] };
 
-class Type {
-  t: TypeKind = { kind: "none" };
-  nullable: boolean = false;
-  length: number = 1;
+interface NamedType extends Element {
+  fields: { name: string; type: Type }[];
 }
 
-interface SumType {
-  variants: Type[];
+interface Constant {
+  t: { kind: "numeric"; val: number } | { kind: "boolean"; val: boolean };
+  length: number;
 }
 
-interface ProductType {
-  fields: Record<string, Type>;
-}
-
-// compile-time primitive value
-type Constant =
-  | { kind: "numeric"; val: number }
-  | { kind: "boolean"; val: boolean }
-  | { kind: "string"; val: string }
-  | { kind: "array"; val: Constant[] };
-
-// type literal for product types or arrays
-// identifier value pairs where values can be constants or runtime values
-// identifiers can be relative order or field name
-interface Literal {}
-
-export interface Node {
-  name: string;
+export interface Node extends Element {
   inputs: Record<string, Type>;
   outputs: Record<string, Type>;
-  impl: Record<string, NodeInstance>;
+  impl: NodeGraph;
 }
 
-interface NodeInstance {
-  name: string;
-  kind: Node;
-  edges: Record<string, Port>;
+interface NodeGraph {
+  nodes: Record<string, Node>;
+  edges: Record<string, string>; // "node/port": "node/port"
 }
 
-interface Port {
-  node: Node;
-  name: string;
-}
-
-interface Comment {
-  content: string;
-  //TODO element binding
-}
-
-export class AmpProgramBuilder {
+export class ProgramBuilder {
   name: string;
 
   constructor(name: string) {
     this.name = name;
   }
 
-  build(): AmpProgram {
+  build(): Program {
     //TODO resolve references and validate program
-    return new AmpProgram("app");
+    return new Program("app");
   }
 
   //TODO construction methods
