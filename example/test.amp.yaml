@@ -1,4 +1,6 @@
+# namespace
 Example:
+  # named type
   ExampleType:
     kind: type
     public: false
@@ -6,8 +8,9 @@ Example:
     n:
       type: int
 
+  # node
   Add:
-    kind: Node
+    kind: node
     public: false
     comments: []
     export: false

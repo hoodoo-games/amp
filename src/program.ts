@@ -23,6 +23,10 @@ export class Program {
     return this;
   }
 
+  root(): Node {
+    return this.elements[this.name] as Node;
+  }
+
   validate() {}
 }
 
@@ -45,7 +49,12 @@ type Type =
 //TODO type comparisons (subset/superset)
 
 interface NamedType extends Element {
-  fields: { name: string; type: Type }[];
+  fields: Field[];
+}
+
+interface Field {
+  name: string;
+  type: Type;
 }
 
 export interface Node extends Element {
@@ -71,4 +80,63 @@ type NodeImpl =
 interface NodeGraph {
   nodes: string[];
   links: Record<string, string>; // "node/port": "node/port"
+}
+
+export class TypeBuilder {
+  t: NamedType;
+
+  constructor(name: string) {
+    this.t = { name, public: false, comments: [], fields: [] };
+  }
+
+  pub(): TypeBuilder {
+    this.t.public = true;
+    return this;
+  }
+
+  field(field: Field): TypeBuilder {
+    this.t.fields.push(field);
+    return this;
+  }
+}
+
+export class NodeBuilder {
+  n: Node;
+
+  constructor(name: string) {
+    this.n = {
+      name,
+      public: false,
+      comments: [],
+      export: false,
+      inputs: [],
+      outputs: [],
+      impl: { kind: "op" },
+    };
+  }
+
+  pub(): NodeBuilder {
+    this.n.public = true;
+    return this;
+  }
+
+  export(): NodeBuilder {
+    this.n.export = true;
+    return this;
+  }
+
+  input(input: Port): NodeBuilder {
+    this.n.inputs.push(input);
+    return this;
+  }
+
+  output(output: Port): NodeBuilder {
+    this.n.outputs.push(output);
+    return this;
+  }
+
+  impl(impl: NodeImpl): NodeBuilder {
+    this.n.impl = impl;
+    return this;
+  }
 }
