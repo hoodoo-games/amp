@@ -1,0 +1,17 @@
+Example:
+  ExampleType:
+    kind: type
+    public: false
+    comments: []
+    n:
+      type: int
+
+  Add:
+    kind: Node
+    public: false
+    comments: []
+    export: false
+    imports: []
+    exports: []
+    impl:
+      kind: op

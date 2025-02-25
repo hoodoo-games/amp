@@ -1,10 +1,32 @@
 // compile-time representation of program
-export interface Program {
-  root: string;
-  elements: Record<string, Element>;
+export class Program {
+  name: string;
+  elements: Record<string, Element> = {};
+
+  constructor(name: string) {
+    const rootNode = {
+      name,
+      public: false,
+      comments: [],
+      export: false,
+      inputs: [],
+      outputs: [],
+      impl: { kind: "graph", graph: { nodes: [], links: {} } },
+    };
+
+    this.elements[name] = rootNode;
+    this.name = name;
+  }
+
+  element(e: Element): Program {
+    this.elements[e.name] = e;
+    return this;
+  }
+
+  validate() {}
 }
 
-interface Element {
+export interface Element {
   name: string;
   public: boolean;
   comments: string[];
@@ -38,53 +60,15 @@ interface Port {
   type: Type;
 }
 
+type ConstValue = number | boolean | string;
+
 type NodeImpl =
-  | { kind: "core" }
+  | { kind: "op" }
+  | { kind: "const"; values: ConstValue[] }
   | { kind: "import" }
   | { kind: "graph"; graph: NodeGraph };
 
 interface NodeGraph {
   nodes: string[];
   links: Record<string, string>; // "node/port": "node/port"
-}
-
-export class ProgramBuilder {
-  root: Node;
-  nodes: Record<string, Node> = {};
-  types: Record<string, NamedType> = {};
-
-  constructor(name: string) {
-    this.root = {
-      name,
-      public: true,
-      comments: [],
-      export: false,
-      inputs: [],
-      outputs: [],
-      impl: { kind: "graph", graph: { nodes: [], links: {} } },
-    };
-  }
-
-  build(): Program {
-    const p = { root: this.root.name, elements: {} };
-
-    //TODO validate program
-    //TODO check for element name conflicts
-    //TODO check for invalid node impls
-    //TODO check for invalid links
-
-    return p;
-  }
-
-  node(n: Node): ProgramBuilder {
-    //TODO check for name conflict
-    this.nodes[n.name] = n;
-    return this;
-  }
-
-  type(t: NamedType): ProgramBuilder {
-    //TODO check for name conflict
-    this.types[t.name] = t;
-    return this;
-  }
 }
